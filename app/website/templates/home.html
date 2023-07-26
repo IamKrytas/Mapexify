@@ -1,42 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
-    <title>Home Page</title>
-</head>
-<body>
-    <h1>Enter your localization</h1>
-    <form action="/" method="post" enctype="multipart/form-data">
-        <label for="country">Country:</label>
-        <input type="text" id="country" name="country" required><br>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+        <title>Home Page</title>
+    </head>
+    <body>
+        <h1>Enter your localization</h1>
+        <form action="/" method="post" enctype="multipart/form-data">
+            <label for="country">Country:</label>
+            <input type="text" id="country" name="country" required /><br />
 
-        <label for="city">City:</label>
-        <input type="text" id="city" name="city" required><br>
+            <label for="city">City:</label>
+            <input type="text" id="city" name="city" required /><br />
 
-        <label for="street">Street:</label>
-        <input type="text" id="street" name="street"><br>
+            <label for="street">Street:</label>
+            <input type="text" id="street" name="street" /><br />
 
-        <label for="house">House:</label>
-        <input type="text" id="house" name="house"><br>
+            <label for="house">House:</label>
+            <input type="text" id="house" name="house" /><br />
 
-        <label for="postal">Postal Code:</label>
-        <input type="text" id="postal" name="postal"><br>
+            <label for="postal">Postal Code:</label>
+            <input type="text" id="postal" name="postal" /><br />
 
-        <input type="submit" value="Submit">
-    </form>
+            <input type="submit" value="Submit" />
+        </form>
 
-    <h1>Lista sugestii:</h1>
-    <form method="post" action="/choice">
-        <ul>
-            {% for suggestion in suggestions %}
+        <h1>Lista sugestii:</h1>
+        <form method="post" action="/choice">
+            <ul>
+                {% for suggestion in suggestions %}
                 <li>
                     <!-- Dodajemy przycisk do wyboru sugestii -->
                     <button type="submit" name="suggestion" value="{{ suggestion }}">{{ suggestion }}</button>
                 </li>
-            {% endfor %}
-        </ul>
-    </form>
-</body>
+                {% endfor %}
+            </ul>
+        </form>
+    </body>
 </html>

@@ -7,7 +7,7 @@ import os
 # Metadata
 __author__ = "IamKrytas"
 __name__ = "Mapexify"
-__version__ = "0.0.1"
+__version__ = "0.1.1"
 
 def get_data_from_api(country: str, city: str, street: str, house: str, postal: str) -> list:
     try:
@@ -44,14 +44,15 @@ def save_to_json_file(data):
     if not os.path.exists(jsons):
         os.makedirs(jsons)
     try:
+        data_str = json.dumps(data).replace("'", '"')
         with open(os.path.join(jsons, "data.json"), "w") as f:
-            f.write(str(data))
+            f.write(data_str)
     except:
         raise Exception("Error while saving to json")
     
 
 def find_location_by_formatted_address(choice):
-    with open("app/jsons/tmp.json", "r") as f:
+    with open("app/jsons/data.json", "r") as f:
         json_data = json.load(f)
     for location in json_data["locations"]:
         if location["formattedAddress"] == choice:
