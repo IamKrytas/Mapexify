@@ -11,7 +11,7 @@ __version__ = "0.2.1"
 
 def get_data_from_api(country: str, city: str, street: str, house: str, postal: str) -> list:
     try:
-        key = static.api_key
+        key = static.api_key_2
         url = f"https://api.myptv.com/geocoding/v1/locations/by-address?country={country}&locality={city}&postalCode={postal}&street={street}&houseNumber={house}"
         headers = {
             "apiKey": key
@@ -58,3 +58,19 @@ def find_location_by_formatted_address(choice):
         if location["formattedAddress"] == choice:
             return location
     return None
+
+
+def get_location(data):
+    with open ("app/jsons/path.json", "r") as f:
+        data = json.load(f)
+        lat = []
+        lon = []
+        for item in data:
+            #add to lists
+            lat.append(item["referencePosition"]["latitude"]) #x
+            lon.append(item["referencePosition"]["longitude"]) #y
+        print(lat)
+        print("---------------------------------")
+        print(lon)
+        print("---------------------------------")
+        return lat, lon

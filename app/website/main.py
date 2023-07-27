@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+import json
 import mapexify
 
 app = Flask(__name__)
@@ -33,5 +34,23 @@ def choice():
     #send json_final to frontend
     return render_template("home.html", json_final=json_final)
 
+@app.route("/path", methods=["POST"])
+def path():
+    try:
+        data = request.get_json()
+        print("-------------------------------")
+        print(data)
+        print("-------------------------------")
+        mapexify.get_location(data)
+
+        # Tutaj możesz przetwarzać dane i wykonywać odpowiednie operacje
+
+        return jsonify({"message": "Dane odebrane poprawnie."})  # Odpowiedź zwrotna w formacie JSON
+
+    except Exception as e:
+        print("Błąd podczas przetwarzania danych:", e)
+        return jsonify({"error": "Błąd podczas przetwarzania danych."}), 500  # Odpowiedź błędu w formacie JSON
+
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5002)

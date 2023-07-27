@@ -75,6 +75,7 @@
 
                         // Save the jsonData in localStorage
                         saveToLocalStorage(jsonData);
+                        alert("Added to your plan!")
                     {% endif %}
                 </script>
             </div>
@@ -111,7 +112,39 @@
                         }
                     </script>
                     <div id="plan-bts">
-                        <button class="plan-btn-submit" onclick="" type="submit">Submit</button>
+                        <button class="plan-btn-submit" id="submitBtn" type="submit">Submit</button>
+                        <script>
+                            document.getElementById('submitBtn').addEventListener('click', sendDataToBackend);
+                          
+                            function sendDataToBackend() {
+                              // Pobierz dane z localStorage
+                              const data = localStorage.getItem('Points');
+                          
+                              // Sprawdź, czy dane zostały znalezione w localStorage
+                              if (data) {
+                                // Wyślij dane do backendu
+                                fetch('/path', {
+                                  method: 'POST',
+                                  headers: {
+                                    'Content-Type': 'application/json',
+                                  },
+                                  body: JSON.stringify(data), // Send data directly without wrapping it in an object
+
+                                })
+                                  .then(response => response.json())
+                                  .then(responseData => {
+                                    // Tutaj możesz obsłużyć odpowiedź od backendu (jeśli to konieczne)
+                                    console.log('Odpowiedź od backendu:', responseData);
+                                  })
+                                  .catch(error => {
+                                    console.error('Błąd podczas wysyłania danych na backend:', error);
+                                  });
+                              } else {
+                                console.warn('Brak danych w localStorage.');
+                              }
+                            }
+                          </script>
+                          
                         <button class="plan-btn-clear" onclick="clearStorage()" type="submit">Clear</button>
                     </div>
                 </div>
