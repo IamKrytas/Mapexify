@@ -1,33 +1,63 @@
 /* Styles */
-body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-}
 
-h1 {
+h2 {
     text-align: center;
 }
 
-form {
+/*left-side*/
+#left-side {
+    float: left;
+    padding: 20px;
     width: 400px;
-    margin: 0 auto;
+    height: 100%;
+    background-color: #f1f1f1;
+}
+
+/*navbar*/
+#navbar{
+    display: flex;
+    width: 100%;
+    border: 1px solid #ccc;
+}
+.nav-btn{
+    flex-grow: 1; /* Przyciski uzupełniają dostępną przestrzeń na całej szerokości */
+    margin: 10px;
+    height: 40px;
+    background-color: #0f2a10;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+}
+.nav-btn:hover{
+    background-color: #45a049;
+}
+
+/* Localization */
+form {
+    width: 100%;
+    margin-top: 10px;
+    border: 1px solid #ccc;
 }
 
 label {
     display: inline-block;
     width: 120px;
+    margin: 10px;
 }
 
 input[type="text"] {
-    width: 250px;
+    width: 230px;
     padding: 5px;
     margin-bottom: 10px;
+    margin-right: 10px;
 }
 
 input[type="submit"] {
     width: 100%;
     padding: 10px;
-    background-color: #4CAF50;
+    background-color: #0f2a10;
     color: white;
     border: none;
     cursor: pointer;
@@ -39,4 +69,86 @@ input[type="submit"]:hover {
 
 input[type="submit"]:focus {
     outline: none;
+}
+
+/*suggests*/
+ul{
+    list-style-type: none;
+    text-align: center;
+    padding: 5px;
+}
+
+.suggestion-btn{
+    width: 100%;
+    padding: 10px;
+    background-color: #0f2a10;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+.suggestion-btn:hover{
+    background-color: #45a049;
+}
+
+/*plan*/
+#plan{
+    width: 100%;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+}
+
+#plan {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 10px;
+  }
+
+#plan li {
+    padding: 8px;
+    margin-bottom: 4px;
+    margin-right: 50px;
+    border-radius: 4px;
+  }
+
+#plan-bts{
+    display: flex;
+    width: 100%;
+    border: 1px solid #ccc;
+}
+
+.plan-btn-submit{
+    flex-grow: 1;
+    margin: 10px;
+    height: 40px;
+    background-color: #0f2a10;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+}
+.plan-btn-submit:hover{
+    background-color: #45a049;
+}
+
+.plan-btn-clear{
+    flex-grow: 1;
+    margin: 10px;
+    height: 40px;
+    background-color: #0f2a10;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+}
+.plan-btn-clear:hover{
+    background-color: #a51b14;
+}
+
+/*pojazd*/
+#pojazd{
+    width: 100%;
+    margin-top: 10px;
+    border: 1px solid #ccc;
 }

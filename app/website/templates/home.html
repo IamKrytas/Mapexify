@@ -4,39 +4,123 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+        <script src="{{ url_for('static', filename='scripts.js') }}"></script>
         <title>Home Page</title>
     </head>
     <body>
-        <h1>Enter your localization</h1>
-        <form action="/" method="post" enctype="multipart/form-data">
-            <label for="country">Country:</label>
-            <input type="text" id="country" name="country" required /><br />
+        <div id="left-side">
+            <div id="navbar">
+                <button class="nav-btn" onclick="switchTab('szukaj')" type="submit">Szukaj</button>
+                <button class="nav-btn" onclick="switchTab('plan')" type="submit">Plan</button>
+                <button class="nav-btn" onclick="switchTab('pojazd')" type="submit">Pojazd</button>
+            </div>
+            <div id="szukajTab" class="tab-content">
+                <form action="/" method="post" enctype="multipart/form-data">
+                    <h2>Enter your localization:</h2>
+                    <label for="country">Country:</label>
+                    <input type="text" id="country" name="country" required /><br />
 
-            <label for="city">City:</label>
-            <input type="text" id="city" name="city" required /><br />
+                    <label for="city">City:</label>
+                    <input type="text" id="city" name="city" required /><br />
 
-            <label for="street">Street:</label>
-            <input type="text" id="street" name="street" /><br />
+                    <label for="street">Street:</label>
+                    <input type="text" id="street" name="street" /><br />
 
-            <label for="house">House:</label>
-            <input type="text" id="house" name="house" /><br />
+                    <label for="house">House:</label>
+                    <input type="text" id="house" name="house" /><br />
 
-            <label for="postal">Postal Code:</label>
-            <input type="text" id="postal" name="postal" /><br />
+                    <label for="postal">Postal Code:</label>
+                    <input type="text" id="postal" name="postal" /><br />
 
-            <input type="submit" value="Submit" />
-        </form>
+                    <input type="submit" value="Submit" />
+                </form>
 
-        <h1>Lista sugestii:</h1>
-        <form method="post" action="/choice">
-            <ul>
-                {% for suggestion in suggestions %}
-                <li>
-                    <!-- Dodajemy przycisk do wyboru sugestii -->
-                    <button type="submit" name="suggestion" value="{{ suggestion }}">{{ suggestion }}</button>
-                </li>
-                {% endfor %}
-            </ul>
-        </form>
+                <div id="Choice">
+                    <form method="post" action="/choice" id="suggestion-form">
+                        <h2>Lista sugestii:</h2>
+                        <ul>
+                            {% for suggestion in suggestions %}
+                            <li>
+                                <!-- Dodajemy przycisk do wyboru sugestii -->
+                                <button class="suggestion-btn" type="submit" name="suggestion" value="{{ suggestion }}">{{ suggestion }}</button>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </form>
+                </div>
+                <script>
+                    // Function to save data in localStorage with a limit of 10 items
+                    function saveToLocalStorage(data) {
+                        var storedData = localStorage.getItem('Points');
+                        var dataArray = storedData ? JSON.parse(storedData) : [];
+
+                        // Check if the dataArray exceeds the limit of 10 items
+                        if (dataArray.length >= 10) {
+                            // Disable further saving when the limit is reached
+                            console.log('Cannot add more items. Limit of 10 reached.');
+                            return;
+                        }
+
+                        // Add the new data at the end of the array
+                        dataArray.push(data);
+
+                        // Save the updated dataArray in localStorage
+                        localStorage.setItem('Points', JSON.stringify(dataArray));
+                    }
+
+                    // Check if the json_final variable is present in the page (sent from backend)
+                    {% if json_final %}
+                        // Convert the JSON string to a JavaScript object
+                        var jsonData = JSON.parse('{{ json_final|tojson|safe }}');
+
+                        // Save the jsonData in localStorage
+                        saveToLocalStorage(jsonData);
+                    {% endif %}
+                </script>
+            </div>
+            <div id="planTab" class="tab-content" style="display: none;">
+                <div id="plan">
+                    <h2>Plan punktów:</h2>
+                    <script>
+                        // Pobranie danych z LocalStorage
+                        const dataFromLocalStorage = localStorage.getItem("Points");
+
+                        if (dataFromLocalStorage !== null) {
+                            try {
+                                // Próba zdekodowania danych JSON na obiekt JavaScript
+                                const jsonData = JSON.parse(dataFromLocalStorage);
+
+                                // Funkcja do generowania listy punktowanej
+                                function generateListItems(data) {
+                                    const list = document.getElementById("plan");
+                                    data.forEach((item) => {
+                                        const listItem = document.createElement("li");
+                                        listItem.textContent = item.formattedAddress;
+                                        list.appendChild(listItem);
+                                    });
+                                }
+
+                                // Wywołanie funkcji z odczytanym JSON-em z LocalStorage
+                                generateListItems(jsonData);
+                            } catch (error) {
+                                // Obsługa błędów, jeśli dane nie są w poprawnym formacie JSON
+                                console.error("Błąd dekodowania danych JSON:", error);
+                            }
+                        } else {
+                            console.log("Brak danych w LocalStorage");
+                        }
+                    </script>
+                    <div id="plan-bts">
+                        <button class="plan-btn-submit" onclick="" type="submit">Submit</button>
+                        <button class="plan-btn-clear" onclick="clearStorage()" type="submit">Clear</button>
+                    </div>
+                </div>
+            </div>
+            <div id="pojazdTab" class="tab-content" style="display: none;">
+                <div id="pojazd">
+                    <h2>Wybierz pojazd:</h2>
+                </div>
+            </div>
+        </div>
     </body>
 </html>

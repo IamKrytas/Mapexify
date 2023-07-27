@@ -7,7 +7,7 @@ import os
 # Metadata
 __author__ = "IamKrytas"
 __name__ = "Mapexify"
-__version__ = "0.1.1"
+__version__ = "0.2.1"
 
 def get_data_from_api(country: str, city: str, street: str, house: str, postal: str) -> list:
     try:
@@ -44,7 +44,7 @@ def save_to_json_file(data):
     if not os.path.exists(jsons):
         os.makedirs(jsons)
     try:
-        data_str = json.dumps(data).replace("'", '"')
+        data_str = json.dumps(data, ensure_ascii=False).replace("'", '"')
         with open(os.path.join(jsons, "data.json"), "w") as f:
             f.write(data_str)
     except:

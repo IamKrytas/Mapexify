@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, flash
 import mapexify
 
 app = Flask(__name__)
@@ -29,8 +29,9 @@ def choice():
     print(choice)
     json_final = mapexify.find_location_by_formatted_address(choice)
     print(json_final)
-    flash("Added your location")
-    return redirect(url_for("home"))
+    flash("Added your location", "success")
+    #send json_final to frontend
+    return render_template("home.html", json_final=json_final)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
