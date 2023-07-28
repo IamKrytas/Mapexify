@@ -7,11 +7,14 @@ import os
 # Metadata
 __author__ = "IamKrytas"
 __name__ = "Mapexify"
-__version__ = "0.3.1"
+__version__ = "0.4.1"
+
+def get_key() -> str:
+    return static.api_key_2
 
 def get_data_from_api(country: str, city: str, street: str, house: str, postal: str) -> list:
     try:
-        key = static.api_key_2
+        key = get_key()
         url = f"https://api.myptv.com/geocoding/v1/locations/by-address?country={country}&locality={city}&postalCode={postal}&street={street}&houseNumber={house}"
         headers = {
             "apiKey": key
@@ -74,3 +77,38 @@ def get_location():
         print(lon)
         print("---------------------------------")
         return lat, lon
+    
+def get_route_from_api(cordinates):
+    lat = cordinates[0]
+    lon = cordinates[1]
+    key = get_key()
+
+    #url = f"https://api.myptv.com/routing/v1/routes?waypoints={lat[0]},{lon[0]}&waypoints={lat[1]},{lon[1]}&waypoints={lat[2]},{lon[2]}&waypoints={lat[3]},{lon[3]}&results=POLYLINE&options[trafficMode]=AVERAGE"
+    for i in range(len(lat)):
+        if i == 0:
+            url = f"https://api.myptv.com/routing/v1/routes?waypoints={lat[i]},{lon[i]}"
+        else:
+            url += f"&waypoints={lat[i]},{lon[i]}"
+    url += "&results=POLYLINE&options[trafficMode]=AVERAGE"
+    print("//////////////////////////////////////")
+    print(url)
+    print("//////////////////////////////////////")
+        
+    headers = {
+        "apiKey": key
+    }
+    response = requests.get(url, headers=headers)
+    data = response.json()
+    print("---------------------------------")
+    with open("app/jsons/route.json", "w") as f:
+        f.write(json.dumps(data, ensure_ascii=False).replace("'", '"'))
+        print("Saved route to file")
+    return data
+
+def get_route():
+    with open("app/jsons/route.json", "r") as f:
+        data = json.load(f)
+        polilines = json.loads(data["polyline"])
+        coordinates = polilines["coordinates"]
+        print(coordinates)
+    return coordinates

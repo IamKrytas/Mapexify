@@ -20,6 +20,17 @@ function switchTab(tabName) {
   event.currentTarget.classList.add('active');
 }
 
-function clearStorage(){
+function clearStorage() {
+  // Czyszczenie LocalStorage
   localStorage.clear();
+
+  // Usuwanie wszystkich elementów 'li' z elementu o id="plan"
+  var planDiv = document.getElementById("plan");
+  var liElements = planDiv.getElementsByTagName("li");
+
+  // Usuwamy elementy 'li' w pętli od końca, aby uniknąć problemów z indeksami po usunięciu
+  for (var i = liElements.length - 1; i >= 0; i--) {
+    var li = liElements[i];
+    li.parentNode.removeChild(li);
+  }
 }

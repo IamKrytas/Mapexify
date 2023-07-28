@@ -111,8 +111,8 @@ ul{
 #plan li {
     padding: 8px;
     margin-bottom: 4px;
-    margin-right: 50px;
-    border-radius: 4px;
+    margin-right: 20px;
+    text-align: center;
   }
 
 #plan-bts{

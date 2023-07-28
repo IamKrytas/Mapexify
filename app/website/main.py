@@ -37,21 +37,18 @@ def choice():
 
 @app.route("/path", methods=["POST"])
 def path():
-    try:
-        data = request.get_json()
-        print("-------------------------------")
-        print(data)
-        print("-------------------------------")
-        with open ("app/jsons/path.json", "w") as f:
-            f.write(data)
-        coordinates = mapexify.get_location()
+    data = request.get_json()
+    print("-------------------------------")
+    print(data)
+    print("-------------------------------")
+    with open ("app/jsons/path.json", "w") as f:
+        f.write(data)
+    coordinates = mapexify.get_location()
+    #TODO: Get route from API
+    route_api = mapexify.get_route_from_api(coordinates)
+    route = mapexify.get_route()
+    return jsonify(route)
         
-        #TODO: Get route from API
-        return jsonify({"message": "Dane odebrane poprawnie."}) # Response code 200 - OK
-
-    except Exception as e:
-        print("Błąd podczas przetwarzania danych:", e)
-        return jsonify({"error": "Błąd podczas przetwarzania danych."}), 500  # Response code 500 - Internal Server Error
 
 
 if __name__ == "__main__":
