@@ -7,7 +7,7 @@ import os
 # Metadata
 __author__ = "IamKrytas"
 __name__ = "Mapexify"
-__version__ = "0.2.1"
+__version__ = "0.3.1"
 
 def get_data_from_api(country: str, city: str, street: str, house: str, postal: str) -> list:
     try:
@@ -60,7 +60,7 @@ def find_location_by_formatted_address(choice):
     return None
 
 
-def get_location(data):
+def get_location():
     with open ("app/jsons/path.json", "r") as f:
         data = json.load(f)
         lat = []

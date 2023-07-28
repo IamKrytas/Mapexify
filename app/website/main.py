@@ -1,14 +1,15 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
-import json
+from flask import Flask, render_template, request, flash, jsonify
+import static
 import mapexify
 
 app = Flask(__name__)
 app.secret_key = "0123456789"
+key = static.api_key_2
 
 # service home page
 @app.route("/")
 def home():
-    return render_template("home.html")
+    return render_template("home.html", key=key)
 
 @app.route("/", methods=["POST"])
 def get_data():
@@ -20,7 +21,7 @@ def get_data():
     house = request_data["house"]
     postal = request_data["postal"]
     suggestions = mapexify.get_data_from_api(country, city, street, house, postal)
-    return render_template("home.html", suggestions=suggestions)
+    return render_template("home.html", suggestions=suggestions, key=key)
 
 @app.route("/choice", methods=["POST"])
 def choice():
@@ -32,7 +33,7 @@ def choice():
     print(json_final)
     flash("Added your location", "success")
     #send json_final to frontend
-    return render_template("home.html", json_final=json_final)
+    return render_template("home.html", json_final=json_final, key=key)
 
 @app.route("/path", methods=["POST"])
 def path():
@@ -41,15 +42,16 @@ def path():
         print("-------------------------------")
         print(data)
         print("-------------------------------")
-        mapexify.get_location(data)
-
-        # Tutaj możesz przetwarzać dane i wykonywać odpowiednie operacje
-
-        return jsonify({"message": "Dane odebrane poprawnie."})  # Odpowiedź zwrotna w formacie JSON
+        with open ("app/jsons/path.json", "w") as f:
+            f.write(data)
+        coordinates = mapexify.get_location()
+        
+        #TODO: Get route from API
+        return jsonify({"message": "Dane odebrane poprawnie."}) # Response code 200 - OK
 
     except Exception as e:
         print("Błąd podczas przetwarzania danych:", e)
-        return jsonify({"error": "Błąd podczas przetwarzania danych."}), 500  # Odpowiedź błędu w formacie JSON
+        return jsonify({"error": "Błąd podczas przetwarzania danych."}), 500  # Response code 500 - Internal Server Error
 
 
 if __name__ == "__main__":
