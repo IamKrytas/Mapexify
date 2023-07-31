@@ -7,7 +7,7 @@ import os
 # Metadata
 __author__ = "IamKrytas"
 __name__ = "Mapexify"
-__version__ = "0.4.1"
+__version__ = "0.5.1"
 
 def get_key() -> str:
     return static.api_key_2
@@ -66,37 +66,34 @@ def find_location_by_formatted_address(choice):
 def get_location():
     with open ("app/jsons/path.json", "r") as f:
         data = json.load(f)
-        lat = []
-        lon = []
-        for item in data:
-            #add to lists
-            lat.append(item["referencePosition"]["latitude"]) #x
-            lon.append(item["referencePosition"]["longitude"]) #y
-        print(lat)
-        print("---------------------------------")
-        print(lon)
-        print("---------------------------------")
-        return lat, lon
+    lat = []
+    lon = []
+    for item in data:
+        #add to lists
+        lat.append(item["referencePosition"]["latitude"]) #x
+        lon.append(item["referencePosition"]["longitude"]) #y
+    print(lat)
+    print("---------------------------------")
+    print(lon)
+    print("---------------------------------")
+    return lat, lon
     
 def get_route_from_api(cordinates):
     lat = cordinates[0]
     lon = cordinates[1]
     key = get_key()
 
-    #url = f"https://api.myptv.com/routing/v1/routes?waypoints={lat[0]},{lon[0]}&waypoints={lat[1]},{lon[1]}&waypoints={lat[2]},{lon[2]}&waypoints={lat[3]},{lon[3]}&results=POLYLINE&options[trafficMode]=AVERAGE"
     for i in range(len(lat)):
         if i == 0:
             url = f"https://api.myptv.com/routing/v1/routes?waypoints={lat[i]},{lon[i]}"
         else:
             url += f"&waypoints={lat[i]},{lon[i]}"
-    url += "&results=POLYLINE&options[trafficMode]=AVERAGE"
-    print("//////////////////////////////////////")
-    print(url)
-    print("//////////////////////////////////////")
-        
+
+    url += "&results=POLYLINE&options[trafficMode]=AVERAGE"        
     headers = {
         "apiKey": key
     }
+
     response = requests.get(url, headers=headers)
     data = response.json()
     print("---------------------------------")

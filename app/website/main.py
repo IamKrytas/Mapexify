@@ -4,7 +4,7 @@ import mapexify
 
 app = Flask(__name__)
 app.secret_key = "0123456789"
-key = static.api_key_2
+key = mapexify.get_key()
 
 # service home page
 @app.route("/")
@@ -38,18 +38,13 @@ def choice():
 @app.route("/path", methods=["POST"])
 def path():
     data = request.get_json()
-    print("-------------------------------")
-    print(data)
-    print("-------------------------------")
     with open ("app/jsons/path.json", "w") as f:
         f.write(data)
     coordinates = mapexify.get_location()
-    #TODO: Get route from API
-    route_api = mapexify.get_route_from_api(coordinates)
+    mapexify.get_route_from_api(coordinates)
     route = mapexify.get_route()
     return jsonify(route)
         
-
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5002)
