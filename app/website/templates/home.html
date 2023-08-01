@@ -117,75 +117,8 @@
                     }
                 </script>
                 <div id="plan-bts">
-                    <button class="plan-btn-submit" id="submitBtn" type="submit">Submit</button>
-                    <script>
-                        let responseData = null;
-                        document.getElementById('submitBtn').addEventListener('click', sendDataToBackend);
-
-                        function sendDataToBackend() {
-                            // Pobierz dane z localStorage
-                            const data = localStorage.getItem('Points');
-
-                            // Sprawdź, czy dane zostały znalezione w localStorage
-                            if (data) {
-                                // Wyślij dane do backendu
-                                fetch('/path', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                    },
-                                    body: JSON.stringify(data), // Send data directly without wrapping it in an object
-
-                                })
-                                    .then(response => response.json())
-                                    .then(responseData => {
-                                        // Tutaj możesz obsłużyć odpowiedź od backendu (jeśli to konieczne)
-                                        console.log('Odpowiedź od backendu:', responseData);
-                                        responseData = data;
-                                        //map.fire('load');
-                                    })
-                                    .catch(error => {
-                                        console.error('Błąd podczas wysyłania danych na backend:', error);
-                                    });
-                            } else {
-                                console.warn('Brak danych w localStorage.');
-                            }
-                        }
-                        map.on('load', function () {
-                            // Assuming 'responseData' is an array of coordinates
-                            const routeGeoJson = {
-                                type: 'Feature',
-                                properties: {},
-                                geometry: {
-                                    'type': 'LineString',
-                                    'coordinates': responseData
-                                }
-                            };
-
-                            map.addSource('route', {
-                                type: 'geojson',
-                                data: routeGeoJson
-                            });
-
-                            map.addLayer({
-                                id: 'route',
-                                type: 'line',
-                                source: 'route',
-                                layout: {
-                                    'line-join': 'round',
-                                    'line-cap': 'round'
-                                },
-                                paint: {
-                                    'line-color': '#ff0000',
-                                    'line-width': 8
-                                }
-                            });
-                        });
-                    </script>
-                    <!--
-                        <div id="routeDisplay"></div>
-                    -->
-
+                    <button class="plan-btn-submit" id="submitBtn" type="submit"
+                        onclick="sendDataToBackend()">Submit</button>
                     <button class="plan-btn-clear" onclick="clearStorage()" type="submit">Clear</button>
                 </div>
             </div>
@@ -195,20 +128,83 @@
                 <h2>Wybierz pojazd:</h2>
             </div>
         </div>
-    </div>
+
     </div>
     <div id="right-side">
         <div id='map'></div>
         <script type="text/javascript">
             const apiKey = "{{ key }}";
 
+            function addLayerToMap(routeCoordinates) {
+                // Create a GeoJSON object with the route data
+                var geojson = {
+                    type: 'Feature',
+                    properties: {},
+                    geometry: {
+                        type: 'LineString',
+                        coordinates: routeCoordinates
+                    }
+                };
+
+                // Add the GeoJSON as a source to the map
+                map.addSource('route', {
+                    type: 'geojson',
+                    data: geojson
+                });
+
+                // Add a layer to style the route line
+                map.addLayer({
+                    id: 'route',
+                    type: 'line',
+                    source: 'route',
+                    layout: {
+                        'line-join': 'round',
+                        'line-cap': 'round'
+                    },
+                    paint: {
+                        'line-color': '#ff0000',
+                        'line-width': 6
+                    }
+                });
+            }
+
+            function sendDataToBackend() {
+                // Pobierz dane z localStorage
+                const data = localStorage.getItem('Points');
+
+                // Sprawdź, czy dane zostały znalezione w localStorage
+                if (data) {
+                    // Wyślij dane do backendu
+                    fetch('/path', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data), // Send data directly without wrapping it in an object
+
+                    })
+                        .then(response => response.json())
+                        .then(responseData => {
+                            // Tutaj możesz obsłużyć odpowiedź od backendu (jeśli to konieczne)
+                            console.log(responseData);
+                            addLayerToMap(responseData);
+                        })
+                        .catch(error => {
+                            console.error('Błąd podczas wysyłania danych na backend:', error);
+                        });
+                } else {
+                    console.warn('Brak danych w localStorage.');
+                }
+            }
+
+            //maplibregl
             maplibregl.setRTLTextPlugin(
                 'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.3/mapbox-gl-rtl-text.js',
                 null,
                 true // Lazy load the plugin to support right-to-left languages such as Arabic and Hebrew.
             );
-            var mapLocation = [19, 52];
-            var map = new maplibregl.Map({
+            let mapLocation = [19, 52];
+            let map = new maplibregl.Map({
                 // You need a customAttribution if you have to add additional copyright attribution, for example if you want to show additional layers.
                 // attributionControl: true,
                 // customAttribution: '[additional attribution]',
@@ -234,7 +230,6 @@
                 positionOptions: { enableHighAccuracy: true },
                 trackUserLocation: true
             }));
-
         </script>
     </div>
 </body>
