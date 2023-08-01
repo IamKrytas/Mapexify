@@ -151,12 +151,47 @@ ul{
     background-color: #a51b14;
 }
 
-/*wehicle*/
-#wehicle{
+#plan-result li{
+    padding: 8px;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+/*vehicle*/
+#vehicle{
     width: 100%;
     margin-top: 10px;
     border: 1px solid #ccc;
 }
+
+.vehicle-lists{
+    display: flex;
+    width: auto;
+    border: 1px solid #ccc;
+}
+
+
+.vehicle-lists{
+    margin-left: 30px;
+    margin-bottom: 10px;
+    height: 40px;
+    background-color: #0f2a10;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+}
+
+.vehicle-lists:hover{
+    background-color: #45a049;
+}
+
+.vehicle-lists:focus{
+    outline: none;
+    background-color: #0f2a10;
+}
+
 
 /*Map*/
 #map {

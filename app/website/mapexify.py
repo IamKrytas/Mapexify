@@ -108,5 +108,11 @@ def get_route():
         data = json.load(f)
         polilines = json.loads(data["polyline"])
         coordinates = polilines["coordinates"]
-        print(coordinates)
-    return coordinates
+        distance = data["distance"]
+        travel_time = data["travelTime"]
+        distance = round(distance / 1000, 3)
+        travel_time = round(travel_time / 60, 0)
+    return coordinates, distance, travel_time
+
+def get_toll_from_api(wehicle: str, currency: str):
+    pass

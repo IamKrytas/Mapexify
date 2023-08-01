@@ -37,3 +37,13 @@ function clearStorage(layerId) {
     console.warn('Layer with given ID does not exist on the map.')
   }
 }
+function resetVehicleLists() {
+  const selectElements = document.querySelectorAll('.vehicle-lists');
+
+  for (let i = 0; i < selectElements.length; i++) {
+    const selectElement = selectElements[i];
+    if (selectElement.name === 'currency' || selectElement.name === 'vehicle') {
+      selectElement.selectedIndex = 0;
+    }
+  }
+}

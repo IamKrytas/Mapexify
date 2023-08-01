@@ -41,8 +41,17 @@ def path():
         f.write(data)
     coordinates = mapexify.get_location()
     mapexify.get_route_from_api(coordinates)
-    route = mapexify.get_route()
-    return jsonify(route)
+    route = mapexify.get_route()[0]
+    distance = mapexify.get_route()[1]
+    travel_time = mapexify.get_route()[2]
+    return jsonify({"route": route, "distance": distance, "travel_time": travel_time})
+
+@app.route("/toll", methods=["POST"])
+def toll():
+    response = request.get_json()
+    print(response)
+    #TODO: get toll from api
+    return jsonify({"toll": "toll"})
         
 
 if __name__ == "__main__":

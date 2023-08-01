@@ -16,7 +16,7 @@
         <div id="navbar">
             <button class="nav-btn" onclick="switchTab('search')" type="submit">Search</button>
             <button class="nav-btn" onclick="switchTab('plan')" type="submit">Plan</button>
-            <button class="nav-btn" onclick="switchTab('wehicle')" type="submit">Wehicle</button>
+            <button class="nav-btn" onclick="switchTab('vehicle')" type="submit">Vehicle</button>
         </div>
         <div id="searchTab" class="tab-content">
             <form action="/" method="post" enctype="multipart/form-data">
@@ -101,11 +101,83 @@
                         onclick="sendDataToBackend()">Submit</button>
                     <button class="plan-btn-clear" onclick="clearStorage('route')" type="submit">Clear</button>
                 </div>
+                <div id="plan-result">
+                    <h2>Result:</h2>
+                    <li id="distance"></li>
+                    <li id="travel_time"></li>
+                </div>
             </div>
         </div>
-        <div id="wehicleTab" class="tab-content" style="display: none;">
-            <div id="wehicle">
-                <h2>Select wehicle:</h2>
+        <div id="vehicleTab" class="tab-content" style="display: none;">
+            <div id="vehicle">
+                <h2>Select toll:</h2>
+                <div id="toll-lists">
+                    <select class="vehicle-lists" name="vehicle">
+                        <option value="default" selected>Select Profile</option>
+                        <option value="EUR_TRAILER_TRUCK"> EUR Trailer Truck</option>
+                        <option value="EUR_TRUCK_40T"> EUR Truck 40T</option>
+                        <option value="EUR_TRUCK_11_99T">EUR Truck 11 99T</option>
+                        <option value="EUR_TRUCK_7_49T">EUR Truck 7 49T</option>
+                        <option value="EUR_VAN">EUR Van</option>
+                        <option value="EUR_CAR">EUR Car</option>
+                        <option value="USA_1_PICKUP">USA 1 Pickup</option>
+                        <option value="USA_5_DELIVERY">USA 5 Delivery</option>
+                        <option value="USA_8_SEMITRAILER_5AXLE">USA 8 Semitrailer 5AXLE</option>
+                        <option value="AUS_LCV_LIGHT_COMMERCIAL">AUS LCV Light Commercial</option>
+                        <option value="AUS_MR_MEDIUM_RIGID">AUS Mr Medium RigID</option>
+                        <option value="AUS_HR_HEAVY_RIGID">AUS Hr Heavy RigID</option>
+                        <option value="IMEA_TRUCK_40T">IMEA Truck 40T</option>
+                        <option value="IMEA_TRUCK_7_49T">IMEA Truck 7 49T</option>
+                        <option value="IMEA_VAN">IMEA Van</option>
+                        <option value="IMEA_CAR">IMEA Car</option>
+                    </select>
+                    <select class="vehicle-lists" name="currency">
+                        <option value="default" selected>Select Currency</option>
+                        <option value="PLN">PLN</option>
+                        <option value="EUR">EUR</option>
+                        <option value="USD">USD</option>
+                        <option value="CHF">CHF</option>
+                        <option value="GBP">GBP</option>
+                        <option value="AED">AED</option>
+                    </select>
+                </div>
+                <div id="plan-bts">
+                    <button class="plan-btn-submit" id="submitBtn" type="submit" onclick="sendData()">Submit</button>
+                    <button class="plan-btn-clear" type="submit" onclick="resetVehicleLists()">Reset lists</button>
+                </div>
+                <script>
+
+                    function sendData() {
+                        // Pobierz wartości z pól formularza
+                        const vehicleValue = document.querySelector('[name="vehicle"]').value;
+                        const currencyValue = document.querySelector('[name="currency"]').value;
+
+                        // Pobierz zawartość z localStorage
+                        const localStorageData = localStorage.getItem('Points'); // Odczytaj zawartość z localStorage o kluczu "Points"
+
+                        // Obiekt z danymi do wysłania na backend
+                        const dataToSend = {
+                            vehicle: vehicleValue,
+                            currency: currencyValue,
+                            localStorageData: localStorageData
+                        };
+
+                        // Wyślij dane na backend za pomocą fetch (lub użyj innej metody do wysyłania danych na backend)
+                        fetch('/toll', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(dataToSend)
+                        })
+                            .then(response => {
+                                // Tutaj możesz obsłużyć odpowiedź od backendu
+                            })
+                            .catch(error => {
+                                // Tutaj możesz obsłużyć błąd, jeśli wystąpił
+                            });
+                    }
+                </script>
             </div>
         </div>
 
@@ -161,8 +233,15 @@
                     })
                         .then(response => response.json())
                         .then(responseData => {
-                            console.log(responseData);
-                            addLayerToMap(responseData);
+                            const distanceElement = document.getElementById('distance');
+                            const travelTimeElement = document.getElementById('travel_time');
+
+                            distanceElement.textContent = 'Distance: ' + responseData.distance + ' km';
+                            travelTimeElement.textContent = 'Travel Time: ' + responseData.travel_time + ' min';
+
+                            route = responseData.route;
+                            console.log(route);
+                            addLayerToMap(route);
                         })
                         .catch(error => {
                             console.log("Error during sending data to backend.", error)
