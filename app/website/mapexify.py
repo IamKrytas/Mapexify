@@ -7,7 +7,7 @@ import os
 # Metadata
 __author__ = "IamKrytas"
 __name__ = "Mapexify"
-__version__ = "0.5.1"
+__version__ = "0.5.2"
 
 def get_key() -> str:
     return static.api_key_2
@@ -52,6 +52,7 @@ def save_to_json_file(data):
             f.write(data_str)
     except:
         raise Exception("Error while saving to json")
+    return True
     
 
 def find_location_by_formatted_address(choice):

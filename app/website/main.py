@@ -12,21 +12,21 @@ def home():
 
 @app.route("/", methods=["POST"])
 def get_data():
-    request_data = request.form
-    print(request_data)
-    country = request_data["country"]
-    city = request_data["city"]
-    street = request_data["street"]
-    house = request_data["house"]
-    postal = request_data["postal"]
+    response = request.form
+    print(response)
+    country = response["country"]
+    city = response["city"]
+    street = response["street"]
+    house = response["house"]
+    postal = response["postal"]
     suggestions = mapexify.get_data_from_api(country, city, street, house, postal)
     return render_template("home.html", suggestions=suggestions, key=key)
 
 @app.route("/choice", methods=["POST"])
 def choice():
-    request_data = request.form
-    print(request_data)
-    choice = request_data["suggestion"]
+    response = request.form
+    print(response)
+    choice = response["suggestion"]
     print(choice)
     json_final = mapexify.find_location_by_formatted_address(choice)
     print(json_final)

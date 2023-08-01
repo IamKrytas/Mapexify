@@ -25,7 +25,7 @@ h2 {
     border: 1px solid #ccc;
 }
 .nav-btn{
-    flex-grow: 1; /* Przyciski uzupełniają dostępną przestrzeń na całej szerokości */
+    flex-grow: 1;
     margin: 10px;
     height: 40px;
     background-color: #0f2a10;
@@ -76,7 +76,7 @@ input[type="submit"]:focus {
     outline: none;
 }
 
-/*suggests*/
+/*suggestion*/
 ul{
     list-style-type: none;
     text-align: center;
@@ -151,8 +151,8 @@ ul{
     background-color: #a51b14;
 }
 
-/*pojazd*/
-#pojazd{
+/*wehicle*/
+#wehicle{
     width: 100%;
     margin-top: 10px;
     border: 1px solid #ccc;
