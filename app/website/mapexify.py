@@ -108,11 +108,46 @@ def get_route():
         data = json.load(f)
         polilines = json.loads(data["polyline"])
         coordinates = polilines["coordinates"]
-        distance = data["distance"]
-        travel_time = data["travelTime"]
-        distance = round(distance / 1000, 3)
-        travel_time = round(travel_time / 60, 0)
-    return coordinates, distance, travel_time
+    return coordinates
 
-def get_toll_from_api(wehicle: str, currency: str):
-    pass
+def get_toll_atributes(response):
+    locations = json.loads(response['localStorageData'])
+    latitude = []
+    longitude = []
+
+    if "profile" in response:
+        profile = response['profile']
+
+    if "currency" in response:
+        currency = response['currency']
+
+    for location in locations:
+        if 'referencePosition' in location:
+            latitude.append(location['referencePosition']['latitude'])
+            longitude.append(location['referencePosition']['longitude'])
+            
+    return latitude, longitude, profile, currency
+
+def get_toll_data_from_api(lat: list, lon: list, profile: str, currency: str):
+    key = get_key()
+    for i in range(len(lat)):
+        if i == 0:
+            url = f"https://api.myptv.com/routing/v1/routes?waypoints={lat[i]},{lon[i]}"
+        else:
+            url += f"&waypoints={lat[i]},{lon[i]}"
+    url += f"&profile={profile}&results=TOLL_COSTS&options[currency]={currency}&options[trafficMode]=AVERAGE"
+    headers = {
+        "apiKey": key
+    }
+    response = requests.get(url, headers=headers)
+    data = response.json()
+    print(data)
+    return data
+
+def get_price(data):
+    price = data["toll"]["costs"]["convertedPrice"]["price"]
+    currency = data["toll"]["costs"]["convertedPrice"]["currency"]
+    distance = data["distance"]
+    travel_time = data["travelTime"]
+    #TODO: Convert m to km and s to h+m
+    return price, currency, distance, travel_time

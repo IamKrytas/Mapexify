@@ -42,7 +42,7 @@ function resetVehicleLists() {
 
   for (let i = 0; i < selectElements.length; i++) {
     const selectElement = selectElements[i];
-    if (selectElement.name === 'currency' || selectElement.name === 'vehicle') {
+    if (selectElement.name === 'currency' || selectElement.name === 'profile') {
       selectElement.selectedIndex = 0;
     }
   }

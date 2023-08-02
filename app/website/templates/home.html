@@ -104,7 +104,8 @@
                 <div id="plan-result">
                     <h2>Result:</h2>
                     <li id="distance"></li>
-                    <li id="travel_time"></li>
+                    <li id="time"></li>
+                    <li id="price"></li>
                 </div>
             </div>
         </div>
@@ -112,7 +113,7 @@
             <div id="vehicle">
                 <h2>Select toll:</h2>
                 <div id="toll-lists">
-                    <select class="vehicle-lists" name="vehicle">
+                    <select class="vehicle-lists" name="profile">
                         <option value="default" selected>Select Profile</option>
                         <option value="EUR_TRAILER_TRUCK"> EUR Trailer Truck</option>
                         <option value="EUR_TRUCK_40T"> EUR Truck 40T</option>
@@ -149,7 +150,7 @@
 
                     function sendData() {
                         // Pobierz wartości z pól formularza
-                        const vehicleValue = document.querySelector('[name="vehicle"]').value;
+                        const profileValue = document.querySelector('[name="profile"]').value;
                         const currencyValue = document.querySelector('[name="currency"]').value;
 
                         // Pobierz zawartość z localStorage
@@ -157,7 +158,7 @@
 
                         // Obiekt z danymi do wysłania na backend
                         const dataToSend = {
-                            vehicle: vehicleValue,
+                            profile: profileValue,
                             currency: currencyValue,
                             localStorageData: localStorageData
                         };
@@ -170,8 +171,21 @@
                             },
                             body: JSON.stringify(dataToSend)
                         })
-                            .then(response => {
-                                // Tutaj możesz obsłużyć odpowiedź od backendu
+                            .then(response => response.json())
+                            .then(data => {
+                                let currency = data.converted_currency;
+                                let price = data.converted_price;
+                                let distance = data.distance;
+                                let time = data.time;
+                                
+                                const distanceElement = document.getElementById('distance');
+                                const timeElement = document.getElementById('time');
+                                const priceElement = document.getElementById('price');
+
+
+                                distanceElement.innerHTML = `Distance: ${distance} m`;
+                                timeElement.innerHTML = `Travel time: ${time} s`;
+                                priceElement.innerHTML = `Cost: ${price} ${currency}`;
                             })
                             .catch(error => {
                                 // Tutaj możesz obsłużyć błąd, jeśli wystąpił
@@ -233,14 +247,7 @@
                     })
                         .then(response => response.json())
                         .then(responseData => {
-                            const distanceElement = document.getElementById('distance');
-                            const travelTimeElement = document.getElementById('travel_time');
-
-                            distanceElement.textContent = 'Distance: ' + responseData.distance + ' km';
-                            travelTimeElement.textContent = 'Travel Time: ' + responseData.travel_time + ' min';
-
                             route = responseData.route;
-                            console.log(route);
                             addLayerToMap(route);
                         })
                         .catch(error => {

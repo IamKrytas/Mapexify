@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, flash, jsonify
 import mapexify
+import json
 
 app = Flask(__name__)
 app.secret_key = "0123456789"
@@ -31,7 +32,6 @@ def choice():
     json_final = mapexify.find_location_by_formatted_address(choice)
     print(json_final)
     flash("Added your location", "success")
-    #send json_final to frontend
     return render_template("home.html", json_final=json_final, key=key)
 
 @app.route("/path", methods=["POST"])
@@ -41,17 +41,22 @@ def path():
         f.write(data)
     coordinates = mapexify.get_location()
     mapexify.get_route_from_api(coordinates)
-    route = mapexify.get_route()[0]
-    distance = mapexify.get_route()[1]
-    travel_time = mapexify.get_route()[2]
-    return jsonify({"route": route, "distance": distance, "travel_time": travel_time})
+    route = mapexify.get_route()
+    return jsonify({"route": route})
 
 @app.route("/toll", methods=["POST"])
 def toll():
-    response = request.get_json()
-    print(response)
-    #TODO: get toll from api
-    return jsonify({"toll": "toll"})
+    data = request.get_json()
+    lat = mapexify.get_toll_atributes(data)[0]
+    lon = mapexify.get_toll_atributes(data)[1]
+    profile = mapexify.get_toll_atributes(data)[2]
+    currency = mapexify.get_toll_atributes(data)[3]
+    fetch = mapexify.get_toll_data_from_api(lat, lon, profile, currency)
+    converted_price = mapexify.get_price(fetch)[0]
+    converted_currency = mapexify.get_price(fetch)[1]
+    distance = mapexify.get_price(fetch)[2]
+    time = mapexify.get_price(fetch)[3]
+    return jsonify({"converted_price": converted_price, "converted_currency": converted_currency, "distance": distance, "time": time})
         
 
 if __name__ == "__main__":
