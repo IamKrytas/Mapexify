@@ -1,10 +1,11 @@
-from flask import Flask, render_template, request, flash, jsonify
+from flask import Flask, render_template, request, jsonify
 import mapexify
-import json
+
 
 app = Flask(__name__)
 app.secret_key = "0123456789"
 key = mapexify.get_key()
+
 
 # service home page
 @app.route("/")
@@ -14,34 +15,29 @@ def home():
 @app.route("/", methods=["POST"])
 def get_data():
     response = request.form
-    print(response)
     country = response["country"]
     city = response["city"]
     street = response["street"]
     house = response["house"]
     postal = response["postal"]
-    suggestions = mapexify.get_data_from_api(country, city, street, house, postal)
+    global data
+    data = mapexify.get_data_from_api(country, city, street, house, postal)
+    suggestions = mapexify.get_suggestions(data)
     return render_template("home.html", suggestions=suggestions, key=key)
 
 @app.route("/choice", methods=["POST"])
 def choice():
     response = request.form
-    print(response)
     choice = response["suggestion"]
-    print(choice)
-    json_final = mapexify.find_location_by_formatted_address(choice)
-    print(json_final)
-    flash("Added your location", "success")
+    json_final = mapexify.find_location_by_formatted_address(choice, data)
     return render_template("home.html", json_final=json_final, key=key)
 
 @app.route("/path", methods=["POST"])
 def path():
-    data = request.get_json()
-    with open ("app/jsons/path.json", "w") as f:
-        f.write(data)
-    coordinates = mapexify.get_location()
-    mapexify.get_route_from_api(coordinates)
-    route = mapexify.get_route()
+    response = request.get_json()
+    coordinates = mapexify.get_location(response)
+    api_route = mapexify.get_route_from_api(coordinates)
+    route = mapexify.get_route(api_route)
     return jsonify({"route": route})
 
 @app.route("/toll", methods=["POST"])

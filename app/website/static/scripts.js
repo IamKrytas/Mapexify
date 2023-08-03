@@ -18,25 +18,29 @@ function switchTab(tabName) {
   event.currentTarget.classList.add('active');
 }
 
-// Function to clear local storage, points plan and map layer
-function clearStorage(layerId) {
+// Function to clear local storage, points plan, result and map layer
+function clearRoute() {
   localStorage.clear();
 
-  var planDiv = document.getElementById("plan");
-  var liElements = planDiv.getElementsByTagName("li");
+  const planDiv = document.getElementById("plan");
+  const liElements = planDiv.getElementsByTagName("li");
 
   for (var i = liElements.length - 1; i >= 0; i--) {
     var li = liElements[i];
     li.parentNode.removeChild(li);
   }
 
-  var mapLayer = map.getLayer(layerId);
+  var mapLayer = map.getLayer('route');
   if (mapLayer) {
-    map.removeLayer(layerId);
+    map.removeLayer('route');
   } else {
     console.warn('Layer with given ID does not exist on the map.')
   }
+  const resultContainer = document.getElementById("result");
+  resultContainer.style.display = "none";
+
 }
+// Function to reset vehicle lists
 function resetVehicleLists() {
   const selectElements = document.querySelectorAll('.vehicle-lists');
 

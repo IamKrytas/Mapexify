@@ -36,10 +36,10 @@
                 <label for="postal">Postal Code:</label>
                 <input type="text" id="postal" name="postal" /><br />
 
-                <input type="submit" value="Submit" />
+                <input type="submit" value="Submit" onclick="displaySuggestions()"/>
             </form>
 
-            <div id="Choice">
+            <div id="choice">
                 <form method="post" action="/choice" id="suggestion-form">
                     <h2>List of suggestions:</h2>
                     <ul>
@@ -99,13 +99,7 @@
                 <div id="plan-bts">
                     <button class="plan-btn-submit" id="submitBtn" type="submit"
                         onclick="sendDataToBackend()">Submit</button>
-                    <button class="plan-btn-clear" onclick="clearStorage('route')" type="submit">Clear</button>
-                </div>
-                <div id="plan-result">
-                    <h2>Result:</h2>
-                    <li id="distance"></li>
-                    <li id="time"></li>
-                    <li id="price"></li>
+                    <button class="plan-btn-clear" onclick="clearRoute()" type="submit">Clear</button>
                 </div>
             </div>
         </div>
@@ -177,15 +171,18 @@
                                 let price = data.converted_price;
                                 let distance = data.distance;
                                 let time = data.time;
-                                
+
                                 const distanceElement = document.getElementById('distance');
                                 const timeElement = document.getElementById('time');
                                 const priceElement = document.getElementById('price');
 
 
-                                distanceElement.innerHTML = `Distance: ${distance} m`;
-                                timeElement.innerHTML = `Travel time: ${time} s`;
+                                distanceElement.innerHTML = `Distance: ${distance} km`;
+                                timeElement.innerHTML = `Travel time: ${time}`;
                                 priceElement.innerHTML = `Cost: ${price} ${currency}`;
+                                
+                                const resultContainer = document.getElementById("result");
+                                resultContainer.style.display = "block";
                             })
                             .catch(error => {
                                 // Tutaj możesz obsłużyć błąd, jeśli wystąpił
@@ -194,104 +191,109 @@
                 </script>
             </div>
         </div>
-
+        <div id="result">
+            <h2>Result:</h2>
+            <li id="distance"></li>
+            <li id="time"></li>
+            <li id="price"></li>
+        </div>
     </div>
-    <div id="right-side">
-        <div id='map'></div>
-        <script type="text/javascript">
-            const apiKey = "{{ key }}";
+        <div id="right-side">
+            <div id='map'></div>
+            <script type="text/javascript">
+                const apiKey = "{{ key }}";
 
-            // Function to create a map with a marker
-            function addLayerToMap(routeCoordinates) {
-                var geojson = {
-                    type: 'Feature',
-                    properties: {},
-                    geometry: {
-                        type: 'LineString',
-                        coordinates: routeCoordinates
-                    }
-                };
+                // Function to create a map with a marker
+                function addLayerToMap(routeCoordinates) {
+                    var geojson = {
+                        type: 'Feature',
+                        properties: {},
+                        geometry: {
+                            type: 'LineString',
+                            coordinates: routeCoordinates
+                        }
+                    };
 
-                map.addSource('route', {
-                    type: 'geojson',
-                    data: geojson
-                });
+                    map.addSource('route', {
+                        type: 'geojson',
+                        data: geojson
+                    });
 
-                map.addLayer({
-                    id: 'route',
-                    type: 'line',
-                    source: 'route',
-                    layout: {
-                        'line-join': 'round',
-                        'line-cap': 'round'
-                    },
-                    paint: {
-                        'line-color': '#ff0000',
-                        'line-width': 6
-                    }
-                });
-            }
-
-            // Function to send data from localStorage to backend
-            function sendDataToBackend() {
-                const data = localStorage.getItem('Points');
-                const count = JSON.parse(data).length;
-
-                if (count >= 2 && count <= 10) {
-                    fetch('/path', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
+                    map.addLayer({
+                        id: 'route',
+                        type: 'line',
+                        source: 'route',
+                        layout: {
+                            'line-join': 'round',
+                            'line-cap': 'round'
                         },
-                        body: JSON.stringify(data),
-                    })
-                        .then(response => response.json())
-                        .then(responseData => {
-                            route = responseData.route;
-                            addLayerToMap(route);
-                        })
-                        .catch(error => {
-                            console.log("Error during sending data to backend.", error)
-
-                        });
-                } else {
-                    console.warn('The number of points in localStorage must be greater than or equal to 2 and less than or equal to 10.')
+                        paint: {
+                            'line-color': '#ff0000',
+                            'line-width': 6
+                        }
+                    });
                 }
-            }
 
-            maplibregl.setRTLTextPlugin(
-                'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.3/mapbox-gl-rtl-text.js',
-                null,
-                true
-            );
-            let mapLocation = [19, 52];
-            let map = new maplibregl.Map({
-                // You need a customAttribution if you have to add additional copyright attribution, for example if you want to show additional layers.
-                // attributionControl: true,
-                // customAttribution: '[additional attribution]',
-                container: 'map',
-                zoom: 5,
-                pitch: 0,
-                minZoom: 2,
-                center: mapLocation,
-                antialias: true,
-                hash: true,
-                style: 'https://vectormaps-resources.myptv.com/styles/latest/standard.json',
-                transformRequest: (url, resourceType) => {
-                    if (resourceType === 'Tile' && url.startsWith('https://api.myptv.com')) {
-                        return {
-                            url: url + '?apiKey=' + apiKey
+                // Function to send data from localStorage to backend
+                function sendDataToBackend() {
+                    const data = localStorage.getItem('Points');
+                    const count = JSON.parse(data).length;
+
+                    if (count >= 2 && count <= 10) {
+                        fetch('/path', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(data),
+                        })
+                            .then(response => response.json())
+                            .then(responseData => {
+                                route = responseData.route;
+                                addLayerToMap(route);
+                            })
+                            .catch(error => {
+                                console.log("Error during sending data to backend.", error)
+
+                            });
+                    } else {
+                        console.warn('The number of points in localStorage must be greater than or equal to 2 and less than or equal to 10.')
+                    }
+                }
+
+                maplibregl.setRTLTextPlugin(
+                    'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.3/mapbox-gl-rtl-text.js',
+                    null,
+                    true
+                );
+                let mapLocation = [19, 52];
+                let map = new maplibregl.Map({
+                    // You need a customAttribution if you have to add additional copyright attribution, for example if you want to show additional layers.
+                    // attributionControl: true,
+                    // customAttribution: '[additional attribution]',
+                    container: 'map',
+                    zoom: 5,
+                    pitch: 0,
+                    minZoom: 2,
+                    center: mapLocation,
+                    antialias: true,
+                    hash: true,
+                    style: 'https://vectormaps-resources.myptv.com/styles/latest/standard.json',
+                    transformRequest: (url, resourceType) => {
+                        if (resourceType === 'Tile' && url.startsWith('https://api.myptv.com')) {
+                            return {
+                                url: url + '?apiKey=' + apiKey
+                            }
                         }
                     }
-                }
-            });
-            map.addControl(new maplibregl.NavigationControl());
-            map.addControl(new maplibregl.GeolocateControl({
-                positionOptions: { enableHighAccuracy: true },
-                trackUserLocation: true
-            }));
-        </script>
-    </div>
+                });
+                map.addControl(new maplibregl.NavigationControl());
+                map.addControl(new maplibregl.GeolocateControl({
+                    positionOptions: { enableHighAccuracy: true },
+                    trackUserLocation: true
+                }));
+            </script>
+        </div>
 </body>
 
 </html>
