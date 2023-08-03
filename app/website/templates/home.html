@@ -19,7 +19,7 @@
             <button class="nav-btn" onclick="switchTab('vehicle')" type="submit">Vehicle</button>
         </div>
         <div id="searchTab" class="tab-content">
-            <form action="/" method="post" enctype="multipart/form-data">
+            <form action="/place" method="post" enctype="multipart/form-data">
                 <h2>Enter your localization:</h2>
                 <label for="country">Country:</label>
                 <input type="text" id="country" name="country" required /><br />
@@ -36,7 +36,7 @@
                 <label for="postal">Postal Code:</label>
                 <input type="text" id="postal" name="postal" /><br />
 
-                <input type="submit" value="Submit" onclick="displaySuggestions()"/>
+                <input type="submit" value="Submit" onclick="displaySuggestions()" />
             </form>
 
             <div id="choice">
@@ -53,17 +53,6 @@
                 </form>
             </div>
             <script>
-                // Function to save data in localStorage with a limit of 10 items
-                function saveToLocalStorage(data) {
-                    var storedData = localStorage.getItem('Points');
-                    var dataArray = storedData ? JSON.parse(storedData) : [];
-                    if (dataArray.length >= 10) {
-                        console.log('Cannot add more items. Limit of 10 reached.');
-                        return;
-                    }
-                    dataArray.push(data);
-                    localStorage.setItem('Points', JSON.stringify(dataArray));
-                }
                 {% if json_final %}
                 var jsonData = JSON.parse('{{ json_final|tojson|safe }}');
                 saveToLocalStorage(jsonData);
@@ -75,26 +64,7 @@
             <div id="plan">
                 <h2>Points plan:</h2>
                 <script>
-                    // Function to fetch data from LocalStorage
-                    const dataFromLocalStorage = localStorage.getItem("Points");
-                    if (dataFromLocalStorage !== null) {
-                        try {
-                            const jsonData = JSON.parse(dataFromLocalStorage);
-                            function generateListItems(data) {
-                                const list = document.getElementById("plan");
-                                data.forEach((item) => {
-                                    const listItem = document.createElement("li");
-                                    listItem.textContent = item.formattedAddress;
-                                    list.appendChild(listItem);
-                                });
-                            }
-                            generateListItems(jsonData);
-                        } catch (error) {
-                            console.error("Error decoding JSON data:", error);
-                        }
-                    } else {
-                        console.log("No data in LocalStorage");
-                    }
+                    displaySuggestions();
                 </script>
                 <div id="plan-bts">
                     <button class="plan-btn-submit" id="submitBtn" type="submit"
@@ -141,53 +111,6 @@
                     <button class="plan-btn-clear" type="submit" onclick="resetVehicleLists()">Reset lists</button>
                 </div>
                 <script>
-
-                    function sendData() {
-                        // Pobierz wartości z pól formularza
-                        const profileValue = document.querySelector('[name="profile"]').value;
-                        const currencyValue = document.querySelector('[name="currency"]').value;
-
-                        // Pobierz zawartość z localStorage
-                        const localStorageData = localStorage.getItem('Points'); // Odczytaj zawartość z localStorage o kluczu "Points"
-
-                        // Obiekt z danymi do wysłania na backend
-                        const dataToSend = {
-                            profile: profileValue,
-                            currency: currencyValue,
-                            localStorageData: localStorageData
-                        };
-
-                        // Wyślij dane na backend za pomocą fetch (lub użyj innej metody do wysyłania danych na backend)
-                        fetch('/toll', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(dataToSend)
-                        })
-                            .then(response => response.json())
-                            .then(data => {
-                                let currency = data.converted_currency;
-                                let price = data.converted_price;
-                                let distance = data.distance;
-                                let time = data.time;
-
-                                const distanceElement = document.getElementById('distance');
-                                const timeElement = document.getElementById('time');
-                                const priceElement = document.getElementById('price');
-
-
-                                distanceElement.innerHTML = `Distance: ${distance} km`;
-                                timeElement.innerHTML = `Travel time: ${time}`;
-                                priceElement.innerHTML = `Cost: ${price} ${currency}`;
-                                
-                                const resultContainer = document.getElementById("result");
-                                resultContainer.style.display = "block";
-                            })
-                            .catch(error => {
-                                // Tutaj możesz obsłużyć błąd, jeśli wystąpił
-                            });
-                    }
                 </script>
             </div>
         </div>
@@ -198,102 +121,102 @@
             <li id="price"></li>
         </div>
     </div>
-        <div id="right-side">
-            <div id='map'></div>
-            <script type="text/javascript">
-                const apiKey = "{{ key }}";
+    <div id="right-side">
+        <div id='map'></div>
+        <script type="text/javascript">
+            const apiKey = "{{ key }}";
 
-                // Function to create a map with a marker
-                function addLayerToMap(routeCoordinates) {
-                    var geojson = {
-                        type: 'Feature',
-                        properties: {},
-                        geometry: {
-                            type: 'LineString',
-                            coordinates: routeCoordinates
-                        }
-                    };
-
-                    map.addSource('route', {
-                        type: 'geojson',
-                        data: geojson
-                    });
-
-                    map.addLayer({
-                        id: 'route',
-                        type: 'line',
-                        source: 'route',
-                        layout: {
-                            'line-join': 'round',
-                            'line-cap': 'round'
-                        },
-                        paint: {
-                            'line-color': '#ff0000',
-                            'line-width': 6
-                        }
-                    });
-                }
-
-                // Function to send data from localStorage to backend
-                function sendDataToBackend() {
-                    const data = localStorage.getItem('Points');
-                    const count = JSON.parse(data).length;
-
-                    if (count >= 2 && count <= 10) {
-                        fetch('/path', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(data),
-                        })
-                            .then(response => response.json())
-                            .then(responseData => {
-                                route = responseData.route;
-                                addLayerToMap(route);
-                            })
-                            .catch(error => {
-                                console.log("Error during sending data to backend.", error)
-
-                            });
-                    } else {
-                        console.warn('The number of points in localStorage must be greater than or equal to 2 and less than or equal to 10.')
+            // Function to create a map with a marker
+            function addLayerToMap(routeCoordinates) {
+                var geojson = {
+                    type: 'Feature',
+                    properties: {},
+                    geometry: {
+                        type: 'LineString',
+                        coordinates: routeCoordinates
                     }
-                }
+                };
 
-                maplibregl.setRTLTextPlugin(
-                    'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.3/mapbox-gl-rtl-text.js',
-                    null,
-                    true
-                );
-                let mapLocation = [19, 52];
-                let map = new maplibregl.Map({
-                    // You need a customAttribution if you have to add additional copyright attribution, for example if you want to show additional layers.
-                    // attributionControl: true,
-                    // customAttribution: '[additional attribution]',
-                    container: 'map',
-                    zoom: 5,
-                    pitch: 0,
-                    minZoom: 2,
-                    center: mapLocation,
-                    antialias: true,
-                    hash: true,
-                    style: 'https://vectormaps-resources.myptv.com/styles/latest/standard.json',
-                    transformRequest: (url, resourceType) => {
-                        if (resourceType === 'Tile' && url.startsWith('https://api.myptv.com')) {
-                            return {
-                                url: url + '?apiKey=' + apiKey
-                            }
-                        }
+                map.addSource('route', {
+                    type: 'geojson',
+                    data: geojson
+                });
+
+                map.addLayer({
+                    id: 'route',
+                    type: 'line',
+                    source: 'route',
+                    layout: {
+                        'line-join': 'round',
+                        'line-cap': 'round'
+                    },
+                    paint: {
+                        'line-color': '#ff0000',
+                        'line-width': 6
                     }
                 });
-                map.addControl(new maplibregl.NavigationControl());
-                map.addControl(new maplibregl.GeolocateControl({
-                    positionOptions: { enableHighAccuracy: true },
-                    trackUserLocation: true
-                }));
-            </script>
-        </div>
+            }
+
+            // Function to send data from localStorage to backend
+            function sendDataToBackend() {
+                const data = localStorage.getItem('Points');
+                const count = JSON.parse(data).length;
+
+                if (count >= 2 && count <= 10) {
+                    fetch('/path', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data),
+                    })
+                        .then(response => response.json())
+                        .then(responseData => {
+                            route = responseData.route;
+                            addLayerToMap(route);
+                        })
+                        .catch(error => {
+                            console.log("Error during sending data to backend.", error)
+
+                        });
+                } else {
+                    console.warn('The number of points in localStorage must be greater than or equal to 2 and less than or equal to 10.')
+                }
+            }
+
+            maplibregl.setRTLTextPlugin(
+                'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.3/mapbox-gl-rtl-text.js',
+                null,
+                true
+            );
+            let mapLocation = [19, 52];
+            let map = new maplibregl.Map({
+                // You need a customAttribution if you have to add additional copyright attribution, for example if you want to show additional layers.
+                // attributionControl: true,
+                // customAttribution: '[additional attribution]',
+                container: 'map',
+                zoom: 5,
+                pitch: 0,
+                minZoom: 2,
+                center: mapLocation,
+                antialias: true,
+                hash: true,
+                style: 'https://vectormaps-resources.myptv.com/styles/latest/standard.json',
+                transformRequest: (url, resourceType) => {
+                    if (resourceType === 'Tile' && url.startsWith('https://api.myptv.com')) {
+                        return {
+                            url: url + '?apiKey=' + apiKey
+                        }
+                    }
+                }
+            });
+            map.addControl(new maplibregl.NavigationControl());
+            map.addControl(new maplibregl.GeolocateControl({
+                positionOptions: { enableHighAccuracy: true },
+                trackUserLocation: true
+            }));
+        </script>
+    </div>
 </body>
 
 </html>

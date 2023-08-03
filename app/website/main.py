@@ -12,7 +12,7 @@ key = mapexify.get_key()
 def home():
     return render_template("home.html", key=key)
 
-@app.route("/", methods=["POST"])
+@app.route("/place", methods=["POST"])
 def get_data():
     response = request.form
     country = response["country"]
