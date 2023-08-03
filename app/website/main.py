@@ -9,11 +9,11 @@ key = mapexify.get_key()
 
 # service home page
 @app.route("/")
-def home():
+def home() -> str:
     return render_template("home.html", key=key)
 
 @app.route("/place", methods=["POST"])
-def get_data():
+def get_data() -> str:
     response = request.form
     country = response["country"]
     city = response["city"]
@@ -26,14 +26,14 @@ def get_data():
     return render_template("home.html", suggestions=suggestions, key=key)
 
 @app.route("/choice", methods=["POST"])
-def choice():
+def choice() -> str:
     response = request.form
     choice = response["suggestion"]
     json_final = mapexify.find_location_by_formatted_address(choice, data)
     return render_template("home.html", json_final=json_final, key=key)
 
 @app.route("/path", methods=["POST"])
-def path():
+def path() -> str:
     response = request.get_json()
     coordinates = mapexify.get_location(response)
     api_route = mapexify.get_route_from_api(coordinates)
@@ -41,19 +41,21 @@ def path():
     return jsonify({"route": route})
 
 @app.route("/toll", methods=["POST"])
-def toll():
-    data = request.get_json()
-    lat = mapexify.get_toll_atributes(data)[0]
-    lon = mapexify.get_toll_atributes(data)[1]
-    profile = mapexify.get_toll_atributes(data)[2]
-    currency = mapexify.get_toll_atributes(data)[3]
+def toll() -> str:
+    response = request.get_json()
+    atributes = mapexify.get_toll_atributes(response)
+    lat = atributes[0]
+    lon = atributes[1]
+    profile = atributes[2]
+    currency = atributes[3]
     fetch = mapexify.get_toll_data_from_api(lat, lon, profile, currency)
-    converted_price = mapexify.get_price(fetch)[0]
-    converted_currency = mapexify.get_price(fetch)[1]
-    distance = mapexify.get_price(fetch)[2]
-    time = mapexify.get_price(fetch)[3]
+    final = mapexify.get_result(fetch)
+    converted_price = final[0]
+    converted_currency = final[1]
+    distance = final[2]
+    time = final[3]
     return jsonify({"converted_price": converted_price, "converted_currency": converted_currency, "distance": distance, "time": time})
         
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5002)
+    app.run(host="0.0.0.0", port=5000)

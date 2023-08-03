@@ -1,0 +1,25 @@
+version: '3'
+
+# Configuring the container for the Flask application
+services:
+  web:
+    container_name: flask
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./app:/app
+    depends_on:
+      - nginx
+
+# Configuring the container for the Nginx server
+  nginx:
+    container_name: nginx
+    image: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      

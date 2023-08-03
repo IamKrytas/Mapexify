@@ -1,6 +1,2 @@
-/app/jsons/*
+/app/website/tests.py
 __pycache__/
-docker-compose.yml
-Dockerfile
-/nginx
-/app/website/static.py
