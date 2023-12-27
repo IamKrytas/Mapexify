@@ -1,2 +1,3 @@
 /app/website/tests.py
 __pycache__/
+/app/website/static.py

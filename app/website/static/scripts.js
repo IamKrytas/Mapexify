@@ -33,20 +33,60 @@ function saveToLocalStorage(data) {
 }
 
 
-// Function to fetch data from LocalStorage and display suggestions
-function displaySuggestions() {
+// Function to fetch data from LocalStorage and display it in a list
+function displayRoutePlan() {
   const dataFromLocalStorage = localStorage.getItem("Points");
   if (dataFromLocalStorage !== null) {
     try {
-      const jsonData = JSON.parse(dataFromLocalStorage);
+      let jsonData = JSON.parse(dataFromLocalStorage);
+
+      function saveDataToLocalStorage(data) {
+        localStorage.setItem("Points", JSON.stringify(data));
+      }
+
       function generateListItems(data) {
         const list = document.getElementById("plan");
-        data.forEach((item) => {
+        list.innerHTML = ""; // Wyczyść listę przed jej ponownym generowaniem
+        data.forEach((item, index) => {
           const listItem = document.createElement("li");
           listItem.textContent = item.formattedAddress;
+
+          // Dodaj przycisk "V" dla każdego elementu listy (oprócz ostatniego)
+          if (index < data.length - 1) {
+            const changeOrderButton = document.createElement("button");
+            changeOrderButton.textContent = "v";
+
+            // Przypisz klasę "changeOrder" do przycisku
+            changeOrderButton.classList.add("changeOrder");
+
+            changeOrderButton.addEventListener("click", () => changeOrder(index));
+            listItem.appendChild(changeOrderButton);
+          }
+
+          //TODO: Dodaj przycisk "^"  dla każdego elementu listy (oprócz pierwszego)
+
+          //TODO: Dodaj obsługę kliknięcia przycisku "X"
+
           list.appendChild(listItem);
         });
       }
+
+      function changeOrder(index) {
+        // Sprawdź, czy indeks nie jest ostatnim indeksem
+        if (index < jsonData.length - 1) {
+          // Zamień kolejność w tablicy
+          const temp = jsonData[index];
+          jsonData[index] = jsonData[index + 1];
+          jsonData[index + 1] = temp;
+
+          // Zapisz zaktualizowane dane w LocalStorage
+          saveDataToLocalStorage(jsonData);
+
+          // Ponownie wygeneruj listę zaktualizowanymi danymi
+          generateListItems(jsonData);
+        }
+      }
+
       generateListItems(jsonData);
     } catch (error) {
       console.error("Error decoding JSON data:", error);
