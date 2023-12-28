@@ -33,64 +33,94 @@ function saveToLocalStorage(data) {
 }
 
 
-// Function to fetch data from LocalStorage and display it in a list
-function displayRoutePlan() {
+// Funkcja do pobierania danych z LocalStorage
+function getPointsFromLocalStorage() {
   const dataFromLocalStorage = localStorage.getItem("Points");
-  if (dataFromLocalStorage !== null) {
-    try {
-      let jsonData = JSON.parse(dataFromLocalStorage);
+  return dataFromLocalStorage ? JSON.parse(dataFromLocalStorage) : null;
+}
 
-      function saveDataToLocalStorage(data) {
-        localStorage.setItem("Points", JSON.stringify(data));
-      }
+// Funkcja do zapisywania danych do LocalStorage
+function saveDataToLocalStorage(data) {
+  localStorage.setItem("Points", JSON.stringify(data));
+}
 
-      function generateListItems(data) {
-        const list = document.getElementById("plan");
-        list.innerHTML = ""; // Wyczyść listę przed jej ponownym generowaniem
-        data.forEach((item, index) => {
-          const listItem = document.createElement("li");
-          listItem.textContent = item.formattedAddress;
+// Funkcja do generowania elementów listy
+function generateListItems(data) {
+  const list = document.getElementById("plan");
+  list.innerHTML = ""; // Wyczyść listę przed jej ponownym generowaniem
 
-          // Dodaj przycisk "V" dla każdego elementu listy (oprócz ostatniego)
-          if (index < data.length - 1) {
-            const changeOrderButton = document.createElement("button");
-            changeOrderButton.textContent = "v";
+  const h2 = document.createElement("h2");
+  h2.textContent = "Points plan:";
+  list.appendChild(h2);
 
-            // Przypisz klasę "changeOrder" do przycisku
-            changeOrderButton.classList.add("changeOrder");
+  data.forEach((item, index) => {
+    const listItem = document.createElement("li");
+    addNameToItem(item, listItem);
+    addButtonsToItem(index, data.length, listItem);
+    list.appendChild(listItem);
+  });
+}
 
-            changeOrderButton.addEventListener("click", () => changeOrder(index));
-            listItem.appendChild(changeOrderButton);
-          }
+// Funkcja do dodawania nazwy do elementu listy
+function addNameToItem(item, listItem) {
+  const nameSpan = document.createElement("span");
+  nameSpan.textContent = item.formattedAddress;
+  listItem.appendChild(nameSpan);
+}
 
-          //TODO: Dodaj przycisk "^"  dla każdego elementu listy (oprócz pierwszego)
+// Funkcja do dodawania przycisków do elementu listy
+function addButtonsToItem(index, dataLength, listItem) {
+  const buttonsDiv = document.createElement("div");
+  buttonsDiv.classList.add("buttons-container");
 
-          //TODO: Dodaj obsługę kliknięcia przycisku "X"
+  if (index < dataLength - 1) {
+    addButton("V", "changeOrder", () => changeOrder(index), buttonsDiv);
+  }
 
-          list.appendChild(listItem);
-        });
-      }
+  addButton("X", "deletePoint", () => deleteItem(index), buttonsDiv);
 
-      function changeOrder(index) {
-        // Sprawdź, czy indeks nie jest ostatnim indeksem
-        if (index < jsonData.length - 1) {
-          // Zamień kolejność w tablicy
-          const temp = jsonData[index];
-          jsonData[index] = jsonData[index + 1];
-          jsonData[index + 1] = temp;
+  listItem.appendChild(buttonsDiv);
+}
 
-          // Zapisz zaktualizowane dane w LocalStorage
-          saveDataToLocalStorage(jsonData);
+// Funkcja do dodawania przycisku
+function addButton(text, className, clickHandler, parentElement) {
+  const button = document.createElement("button");
+  button.textContent = text;
+  button.classList.add(className);
+  button.addEventListener("click", clickHandler);
+  parentElement.appendChild(button);
+}
 
-          // Ponownie wygeneruj listę zaktualizowanymi danymi
-          generateListItems(jsonData);
-        }
-      }
+// Funkcja do usuwania elementu z LocalStorage
+function deleteItem(index) {
+  const parsedData = getPointsFromLocalStorage();
+  if (parsedData && index >= 0 && index < parsedData.length) {
+    parsedData.splice(index, 1);
+    saveDataToLocalStorage(parsedData);
+    generateListItems(parsedData);
+  } else {
+    console.error("Invalid index:", index);
+  }
+}
 
-      generateListItems(jsonData);
-    } catch (error) {
-      console.error("Error decoding JSON data:", error);
-    }
+// Funkcja do zmiany kolejności elementu
+function changeOrder(index) {
+  const jsonData = getPointsFromLocalStorage();
+  if (jsonData && index < jsonData.length - 1) {
+    const temp = jsonData[index];
+    jsonData[index] = jsonData[index + 1];
+    jsonData[index + 1] = temp;
+    saveDataToLocalStorage(jsonData);
+    generateListItems(jsonData);
+  }
+}
+
+// Funkcja do wyświetlania trasy
+function displayRoutePlan() {
+  const jsonData = getPointsFromLocalStorage();
+
+  if (jsonData !== null) {
+    generateListItems(jsonData);
   } else {
     console.log("No data in LocalStorage");
   }
