@@ -22,10 +22,12 @@ In the `vehicle` tab, you can select profile and currency to calculate the infor
 │   └── website
 │       ├── main.py
 │       ├── mapexify.py
+│       ├── static.py
 │       ├── static
 │       │   ├── scripts.js
-│       │   └── styles.css
-│       ├── static.py
+│       │   ├── styles.css
+|       |   └── src
+|       |       └── favicon.png
 │       └── templates
 │           └── home.html
 ├── docker-compose.yml
