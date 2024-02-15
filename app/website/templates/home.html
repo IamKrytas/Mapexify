@@ -159,7 +159,7 @@
                 });
             }
 
-            // Function to send data from localStorage to backend
+            // Wysłanie zgromadzonych danych do backendu żeby otrzymać trasę
             function sendDataToBackend() {
                 const data = localStorage.getItem('Points');
                 const count = JSON.parse(data).length;
@@ -197,7 +197,7 @@
                 // attributionControl: true,
                 // customAttribution: '[additional attribution]',
                 container: 'map',
-                zoom: 5,
+                zoom: 6,
                 pitch: 0,
                 minZoom: 2,
                 center: mapLocation,

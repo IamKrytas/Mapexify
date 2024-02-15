@@ -47,7 +47,7 @@ function saveDataToLocalStorage(data) {
 // Funkcja do generowania elementów listy
 function generateListItems(data) {
   const list = document.getElementById("plan");
-  list.innerHTML = ""; // Wyczyść listę przed jej ponownym generowaniem
+  list.innerHTML = "";
 
   const h2 = document.createElement("h2");
   h2.textContent = "Points plan:";
@@ -170,7 +170,7 @@ function sendData() {
 }
 
 
-// Function to clear local storage, points plan, result and map layer
+// Usuwanie wszyskich danych z LocalStorage
 function clearRoute() {
   localStorage.clear();
 

@@ -18,7 +18,8 @@ h2 {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.6);
     color: white;
-    z-index: 2; /* Ustaw z-index na 2, aby lewy panel był nad mapą */
+    z-index: 2;
+    /* Ustaw z-index na 2, aby lewy panel był nad mapą */
     position: relative;
 }
 
@@ -48,15 +49,19 @@ h2 {
 /* Localization */
 form {
     width: 100%;
-    max-width: 400px; /* Maksymalna szerokość formularza */
-    margin: 0 auto; /* Wyśrodkowanie formularza */
+    max-width: 400px;
+    /* Maksymalna szerokość formularza */
+    margin: 0 auto;
+    /* Wyśrodkowanie formularza */
     border: 1px solid #ccc;
     padding: 20px;
-    box-sizing: border-box; /* Włącza box-sizing do uwzględniania paddingu i borderu w szerokości */
+    box-sizing: border-box;
+    /* Włącza box-sizing do uwzględniania paddingu i borderu w szerokości */
 }
 
 label {
-    display: block; /* Każda etykieta na nowej linii */
+    display: block;
+    /* Każda etykieta na nowej linii */
     margin-bottom: 5px;
 }
 
@@ -66,6 +71,7 @@ input[type="text"] {
     margin-bottom: 10px;
     box-sizing: border-box;
     background-color: rgba(0, 0, 0, 0.4);
+    color: white;
 }
 
 input[type="submit"] {
@@ -109,8 +115,13 @@ input[type="submit"]:focus {
     }
 
     #plan li {
-        font-size: medium;
+        font-size: medium !important;
     }
+
+    .wehicle-lists {
+        margin-left: 20px !important;
+    }
+
 }
 
 /*suggestion*/
@@ -120,7 +131,7 @@ ul {
     padding: 5px;
 }
 
-#suggestion-form{
+#suggestion-form {
     display: block;
 }
 
@@ -291,7 +302,8 @@ ul {
     bottom: 0;
     left: 0;
     width: 100%;
-    z-index: 1; /* Ustaw z-index na 1, aby map był na pierwszym planie */
+    z-index: 1;
+    /* Ustaw z-index na 1, aby map był na pierwszym planie */
 }
 
 /*Result*/
@@ -310,5 +322,3 @@ ul {
 }
 
 /*form on mobile*/
-
-    
